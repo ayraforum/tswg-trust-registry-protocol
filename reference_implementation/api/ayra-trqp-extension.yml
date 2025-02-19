@@ -165,7 +165,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
 
   
-  /registries/{registry_id}/recognition:
+  /registries/{ecosystem_did}/recognition:
     get:
       summary: Check Ecosystem Recognition
       tags:

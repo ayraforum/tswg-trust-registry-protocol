@@ -34,31 +34,148 @@ paths:
         Returns Trust Registry Metadata as a JSON object.
       operationId: getTrustRegistryMetadata
       parameters:
-        - name: egf_did
+        - name: egf_id
           in: query
           required: false
           description: An optional identifier specifying which ecosystem's metadata should be retrieved.
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved Trust Registry Metadata.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TrustRegistryMetadata'
-        '404':
+                $ref: "#/components/schemas/TrustRegistryMetadata"
+        "404":
           description: Metadata not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '401':
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
           description: Unauthorized request.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetails'
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /registries/{ecosystem_id}/recognition:
+    get:
+      summary: Check Ecosystem Recognition
+      tags:
+        - trqp
+      description: |
+        Verifies if the specified ecosystem (`ecosystem_id`) is recognized under the given governance framework (`egf_id`).
+      operationId: checkEcosystemRecognition
+      parameters:
+        - name: ecosystem_id
+          in: path
+          required: true
+          description: Unique identifier of the ecosystem being queried.
+          schema:
+            type: string
+        - name: egf_id
+          in: query
+          required: true
+          description: Unique identifier of the governance framework. Defaults to single egf_id of the Trust Registry itself.
+          schema:
+            type: string
+        - name: time
+          in: query
+          required: false
+          description: RFC3339 timestamp indicating when recognition is checked. Defaults to "now" on system being queried.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Ecosystem recognition successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecognitionResponse"
+        "401":
+          description: Unauthorized request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Ecosystem not recognized or not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /entities/{entity_id}/authorization:
+    get:
+      summary: Check Entity Authorization Status
+      tags:
+        - trqp
+      description: |
+        Determines if the specified entity (`entity_id`) is authorized under the given authorization identifier (`authorization_id`)
+        within the specified governance framework (`egf_id`). Optionally, returns a list of authorizations if `all` is true.
+      operationId: checkAuthorizationStatus
+      parameters:
+        - name: entity_id
+          in: path
+          required: true
+          description: Unique identifier of the entity.
+          schema:
+            type: string
+        - name: authorization_id
+          in: query
+          required: true
+          description: Authorization identifier to evaluate.
+          schema:
+            type: string
+        - name: egf_id
+          in: query
+          required: true
+          description: Unique identifier of the governance framework.
+          schema:
+            type: string
+        - name: all
+          in: query
+          required: true
+          description: Whether to return a list of authorizations.
+          schema:
+            type: boolean
+        - name: time
+          in: query
+          required: false
+          description: |
+            ISO8601/RFC3339 timestamp for authorization status evaluation.
+            Defaults to the current time if omitted.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Authorization status successfully retrieved.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthorizationResponse"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/AuthorizationResponse"
+        "404":
+          description: Entity not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+
 
   /entities/{entity_id}:
     get:
@@ -97,72 +214,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
 
 
-  /entities/{entity_id}/authorization:
-    get:
-      summary: Check Entity Authorization Status
-      tags:
-        - trqp
-      description: |
-        Determines if the specified entity (`entity_id`) is authorized under the given authorization identifier (`authorization_id`)
-        within the specified governance framework (`ecosystem_did`). Optionally, returns a list of authorizations if `all` is true.
-      operationId: checkAuthorizationStatus
-      parameters:
-        - name: entity_id
-          in: path
-          required: true
-          description: Unique identifier of the entity.
-          schema:
-            type: string
-        - name: authorization_id
-          in: query
-          required: true
-          description: Authorization identifier to evaluate.
-          schema:
-            type: string
-        - name: ecosystem_did
-          in: query
-          required: true
-          description: Unique identifier of the governance framework.
-          schema:
-            type: string
-        - name: all
-          in: query
-          required: true
-          description: Whether to return a list of authorizations.
-          schema:
-            type: boolean
-        - name: time
-          in: query
-          required: false
-          description: |
-            ISO8601/RFC3339 timestamp for authorization status evaluation.
-            Defaults to the current time if omitted.
-          schema:
-            type: string
-            format: date-time
-      responses:
-        '200':
-          description: Authorization status successfully retrieved.
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/AuthorizationResponse'
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/AuthorizationResponse'
-        '404':
-          description: Entity not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '401':
-          description: Unauthorized request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
+
 
   /ecosystems/{ecosystem_did}/recognitions:
     get:
@@ -214,54 +266,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
 
-  /ecosystems/{ecosystem_did}/recognition:
-    get:
-      summary: Check Ecosystem Recognition
-      tags:
-        - trqp
-      description: |
-        Verifies if the specified ecosystem (`egf_target`) is recognized under the given governance framework (`egf_source`).
-      operationId: checkEcosystemRecognition
-      parameters:
-        - name: ecosystem_did
-          in: path
-          required: true
-          description: Unique identifier of the ecosystem being queried.
-          schema:
-            type: string
-        - name: egf_did
-          in: query
-          required: true
-          # TODO: Review note on DEFAULT EGF_DID
-          description: Unique identifier of the governance framework. Defaults to single egf_did of the Trust Registry itself.
-          schema:
-            type: string
-        - name: time
-          in: query
-          required: false
-          description: RFC3339 timestamp indicating when recognition is checked. Defaults to "now" on system being queried.
-          schema:
-            type: string
-            format: date-time
-      responses:
-        '200':
-          description: Ecosystem recognition successfully verified.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecognitionResponse'
-        '401':
-          description: Unauthorized request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '404':
-          description: Ecosystem not recognized or not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
+ 
 
 
 #  TODO: query parameters -> put as path

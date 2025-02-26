@@ -174,7 +174,7 @@ paths:
         Verifies if the specified ecosystem (`egf_target`) is recognized under the given governance framework (`egf_source`).
       operationId: checkEcosystemRecognition
       parameters:
-        - name: ecosystem_did
+        - name: ecosystem_id
           in: path
           required: true
           description: Unique identifier of the ecosystem being queried.

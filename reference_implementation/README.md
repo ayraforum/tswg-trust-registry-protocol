@@ -9,7 +9,7 @@ TRQP out of the box, and could easily become a reference implementation for the 
 * Entire Registry Managed Over a JSON file
   * Multiple EGF's allowed
   * Organization and Ecosystem Registration Allowed w/ 2 participants; GAN as an organization and ecosystem, and
-    Velocity Network, as an organization and ecosystem. 
+    Sample Network, as an organization and ecosystem. 
   *  Sample Namespacing provided.
 
 The registry is described in the `data/registry.json` file. The `registry.json` file is read and then the output is

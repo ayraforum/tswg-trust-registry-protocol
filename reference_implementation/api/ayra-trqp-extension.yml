@@ -23,8 +23,6 @@ tags:
 
 paths:
 
-#  TODO: Add some kind of "extensionsSupported" array to allow a standard query of a TRQP-compliant registry that gets an answer of "what else do you support?". This may be the concept that you (@andor) were working on to extend things (aloing with versions). e.g. an object that says "I do AyraTRQP v1.2"
-
   /metadata:
     get:
       summary: Retrieve Trust Registry Metadata
